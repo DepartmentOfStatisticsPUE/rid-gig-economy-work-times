@@ -1,0 +1,23 @@
+"0","gig_month_str <- read_excel(""../data/apps-data.xlsx"", sheet = 2, .name_repair = make_clean_names)  %>%
+  group_by(app) %>%
+  mutate(time = row_number()) %>%
+  gather(times, vals, -app,-period,-time) %>%
+  mutate(times = ifelse(times %in% c(""x120_160_h"", ""x160_h""), ""x120h"", times)) %>%
+  count(app, period, time, times, wt = vals, name = ""vals"") %>%
+  mutate(times = factor(times, c(""x1_min_40_h"", ""x40_80_h"", ""x80_120_h"", ""x120h""),
+                        c(""work 1/4"", ""work 2/4"", ""work 3/4"", ""work 4/4""), 
+                        ordered = T),
+         time = time - 27) %>%
+  ungroup()  %>%
+  #filter(!app %in% c(""Google Chrome"")) %>%
+  mutate(type = ifelse(app %in% c(""Uber Driver"", ""Bolt Driver""), ""Transport"", ""Delivery""),
+         app = factor(app, 
+                      c(""Bolt Courier"", ""DeliGoo Courier"", ""Glover"", ""Takeaway.com Courier"", ""Wolt Courier Partner"", 
+                        ""Bolt Driver"", ""Uber Driver"", ""Google Chrome""),
+                      c(""Bolt Courier"", ""DeliGoo"", ""Glover"", ""Takeaway"", ""Wolt"", ""Bolt Driver"", ""Uber"", ""Google Chrome""),
+                      ordered = T)) %>%
+  left_join(gig_month) %>%
+  filter(vals > 0)
+"
+"1","Joining, by = c(""app"", ""time"")
+"

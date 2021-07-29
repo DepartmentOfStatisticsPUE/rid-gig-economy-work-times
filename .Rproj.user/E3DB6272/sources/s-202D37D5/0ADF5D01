@@ -1,0 +1,28 @@
+{
+    "id": "0ADF5D01",
+    "path": "~/git/nauka/rid/rid-gig-economy-hours/notebooks/1-read-data.Rmd",
+    "project_path": "notebooks/1-read-data.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1626783033508.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "59,108",
+        "scrollLine": "48"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1627544544,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1627544544877,
+    "read_only": false,
+    "read_only_alternatives": []
+}

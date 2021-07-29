@@ -1,0 +1,94 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(gtrendsR)
+```
+
+Apps data
+
+```{r}
+gig_month <- read_excel("../data/apps-data.xlsx", sheet = 1, .name_repair = make_clean_names) %>%
+  mutate(time = row_number() - 27) %>%
+  dplyr::select(-app) %>%
+  gather(app, totals, -time) %>%
+  mutate(app = factor(app, 
+                      c("bolt_courier", "deli_goo_courier", "glover", "takeaway_com_courier", "wolt_courier_partner",
+                        "bolt_driver", "uber_driver", "google_chrome"),
+                      c("Bolt Courier", "DeliGoo", "Glover", "Takeaway", "Wolt", "Bolt Driver", "Uber", 
+                        "Google Chrome"),
+                      ordered = T))
+
+
+gig_month_str <- read_excel("../data/apps-data.xlsx", sheet = 2, .name_repair = make_clean_names)  %>%
+  group_by(app) %>%
+  mutate(time = row_number()) %>%
+  gather(times, vals, -app,-period,-time) %>%
+  mutate(times = ifelse(times %in% c("x120_160_h", "x160_h"), "x120h", times)) %>%
+  count(app, period, time, times, wt = vals, name = "vals") %>%
+  mutate(times = factor(times, c("x1_min_40_h", "x40_80_h", "x80_120_h", "x120h"),
+                        c("work 1/4", "work 2/4", "work 3/4", "work 4/4"), 
+                        ordered = T),
+         time = time - 27) %>%
+  ungroup()  %>%
+  #filter(!app %in% c("Google Chrome")) %>%
+  mutate(type = ifelse(app %in% c("Uber Driver", "Bolt Driver"), "Transport", "Delivery"),
+         app = factor(app, 
+                      c("Bolt Courier", "DeliGoo Courier", "Glover", "Takeaway.com Courier", "Wolt Courier Partner", 
+                        "Bolt Driver", "Uber Driver", "Google Chrome"),
+                      c("Bolt Courier", "DeliGoo", "Glover", "Takeaway", "Wolt", "Bolt Driver", "Uber", "Google Chrome"),
+                      ordered = T)) %>%
+  left_join(gig_month) %>%
+  filter(vals > 0)
+```
+
+```{r}
+gig_month_str %>% 
+  filter(app != "Google Chrome") %>%
+  ggplot(data = ., aes(x = time, y = vals*100, group = app, color = app)) + 
+  geom_line() +
+  #geom_smooth(se = F) + 
+  facet_grid(type ~ times) + 
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Paired") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") + 
+  labs(x = "Liczba miesiecy od 1 lockdownu (marzec 2020=0)", y = "Odsetek uzytkownikow", color = "Aplikcja")
+  
+
+ggsave(filename = "../figures/fig-udzialy.pdf", width = 9, height = 6)
+
+gig_month_str %>% 
+  filter(app != "Google Chrome") %>%
+  ggplot(data = ., aes(x = time, y = vals*totals, group = app, color = app)) + 
+  geom_line() +
+  #geom_smooth(se = F) + 
+  facet_grid(type ~ times, scales = "free_y") + 
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Paired") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red")  + 
+  labs(x = "Liczba miesiecy od 1 lockdownu (marzec 2020=0)", y = "Liczba uzytkownikow", color = "Aplikcja")
+
+ggsave(filename = "../figures/fig-liczby.pdf", width = 9, height = 6)
+
+```
+
+```{r}
+gig_month_str %>% 
+  ggplot(data = ., aes(x = time, y = vals*totals, group = times, fill = times)) + 
+  geom_col() + 
+  #geom_smooth(se = F) + 
+  facet_wrap(~app, scales = "free_y") + 
+  theme_bw() +
+  scale_color_brewer(type = "qual", palette = "Set1") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red")
+```
+
+```{r}
+gig_month
+```
+
