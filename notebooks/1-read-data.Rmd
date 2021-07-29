@@ -88,7 +88,4 @@ gig_month_str %>%
   geom_vline(xintercept = 0, linetype = "dashed", color = "red")
 ```
 
-```{r}
-gig_month
-```
 

@@ -1,0 +1,8 @@
+"0","gig_month_str %>% "
+"0","  ggplot(data = ., aes(x = time, y = vals*totals, group = times, fill = times)) + "
+"0","  geom_col() + "
+"0","  #geom_smooth(se = F) + "
+"0","  facet_wrap(~app, scales = ""free_y"") + "
+"0","  theme_bw() +"
+"0","  scale_color_brewer(type = ""qual"", palette = ""Set1"") +"
+"0","  geom_vline(xintercept = 0, linetype = ""dashed"", color = ""red"")"
